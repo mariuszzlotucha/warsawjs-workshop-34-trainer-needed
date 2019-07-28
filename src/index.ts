@@ -38,7 +38,19 @@ const server = http.createServer((request, response) => {
     console.log(err);
     response.end(err.toString())
   }
-})
+});
+
+const webSocketsServer = new WebSocket.Server({server});
+
+webSocketsServer.on('connection', (socket: WebSocket) => {
+  socket.send('welcome');
+  socket.on('message', message => {
+    console.log(['socket message'], message);
+  });
+  socket.on('close', () => {
+    console.log('socket closed');
+  });
+});
 
 server.listen(PORT, () => {
   console.log('ruszył');

@@ -33,5 +33,23 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTemplateById('trainerDashboard');
   };
 
+  const socket = new WebSocket('ws://localhost:5000');
+
+  socket.onopen = event => {
+    console.log(['WebSocket.onopen'], event);
+  };
+
+  socket.onmessage= ev => {
+    console.log(ev);
+  }
+
+  socket.onerror = ev => {
+    console.log(ev);
+  }
+
+  socket.onclose = ev => {
+    console.log(ev);
+  }
+
   renderLandingView();
 });
