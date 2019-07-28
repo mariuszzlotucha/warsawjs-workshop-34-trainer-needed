@@ -1,0 +1,68 @@
+body {
+    background-color: #eee;
+    font-family: sans-serif;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 16px;
+}
+
+#landingActions {
+    margin: 16px;
+    display: flex;
+}
+
+/*input, select {*/
+/*    min-width: 200px;*/
+/*}*/
+
+form > div {
+    display: flex;
+    flex-direction: column;
+    margin: 16px;
+}
+
+form > div > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.issueListItemHeader {
+    margin: 8px;
+    display: flex;
+    justify-content: space-around;
+    border-bottom: 1px solid;
+}
+
+.issueListItemHeader > div {
+    width: 20%;
+    min-width: 20%;
+    padding: 8px;
+    border: 1px solid;
+}
+
+.issueListItem {
+    margin: 8px;
+    display: flex;
+    justify-content: space-around;
+    border-bottom: 1px solid;
+}
+
+.issueListItem > div {
+    width: 20%;
+    min-width: 20%;
+    border: 1px solid;
+    padding: 8px;
+}
+
+.hide {
+    display: none;
+}
+
+.textAlignLeft {
+    text-align: left;
+}
