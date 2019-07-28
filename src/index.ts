@@ -85,7 +85,7 @@ webSocketsServer.on('connection', (socket: WebSocket) => {
       case 'TRAINER_LOGIN': {
         connectedUser.data = payload;
         state.participants = [...state.participants, connectedUser];
-        sendEvent(connectedUser.socket, {action: 'TRAINER_LOGGED'});
+        sendEvent(connectedUser.socket, {action: 'TRAINER_LOGGED', payload: state.issues});
         break;
       }
       case 'TRAINER_NEEDED': {
@@ -99,6 +99,13 @@ webSocketsServer.on('connection', (socket: WebSocket) => {
         }];
 
         sendEvent(connectedUser.socket, {action: 'ISSUE_RECEIVED'});
+
+        state.trainers.forEach(({socket}) => {
+          sendEvent(socket, {
+            action: 'ISSUES',
+            payload: state.issues
+          });
+        });
         break;
       }
       default: {

@@ -61,6 +61,22 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   const renderTrainerDashboardView = data => {
     renderTemplateById('trainerDashboard');
+
+    const issueListItemTemplate = getNodeById('issueListItem');
+    const issueListNode = getNodeById('issueList');
+
+    data.forEach(it => {
+      const issueListItemNode = document.importNode(issueListItemTemplate.content, true);
+      
+      issueListItemNode.querySelector('.issueListItemName').textContent = it.userName;
+      issueListItemNode.querySelector('.issueListItemGroup').textContent = it.userGroup;
+      issueListItemNode.querySelector('.issueListItemProblem').textContent = it.problem;
+      issueListItemNode.querySelector('.issueListItemStatus').textContent = it.status;
+
+
+      issueListNode.appendChild(issueListItemNode);
+
+    });
   };
 
 
@@ -86,9 +102,19 @@ document.addEventListener('DOMContentLoaded', () => {
         break;
       }
 
+
+      case 'TRAINER_LOGGED': {
+        renderTrainerDashboardView(payload);
+        break;
+      }
+
       case 'ISSUE_RECEIVED': {
         renderIssueReceivedView();
         break;
+      }
+
+      case 'ISSUES': {
+        renderTrainerDashboardView(payload);
       }
     }
   }
