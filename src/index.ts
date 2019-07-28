@@ -43,6 +43,7 @@ const server = http.createServer((request, response) => {
 const state: State = {
   participants: [],
   trainers: [],
+  issues: [],
 };
 
 
@@ -73,7 +74,7 @@ webSocketsServer.on('connection', (socket: WebSocket) => {
   socket.on('message', message => {
     console.log(['socket message'], message);
     const { action, payload } = JSON.parse(message.toString());
-
+    
     switch (action as Action) {
       case 'PARTICIPANT_LOGIN': {
         connectedUser.data = payload;
@@ -85,6 +86,19 @@ webSocketsServer.on('connection', (socket: WebSocket) => {
         connectedUser.data = payload;
         state.participants = [...state.participants, connectedUser];
         sendEvent(connectedUser.socket, {action: 'TRAINER_LOGGED'});
+        break;
+      }
+      case 'TRAINER_NEEDED': {
+        state.issues = [...state.issues, {
+          id: `issue-id-${Date.now()}`,
+          problem: payload.problem,
+          status: 'PENDING',
+          userId: connectedUser.id,
+          userName: connectedUser.data.name,
+          userGroup: connectedUser.data.group,
+        }];
+
+        sendEvent(connectedUser.socket, {action: 'ISSUE_RECEIVED'});
         break;
       }
       default: {

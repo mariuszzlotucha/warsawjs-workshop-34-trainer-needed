@@ -18,14 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
     participantLoginForm.addEventListener('submit', (event) => {
       event.preventDefault();
       const formData = new FormData(event.target);
-
-      sendEvent({
-        action: 'PARTICIPANT_LOGIN',
-        payload: {
-          name: formData.get('name'),
-          group: formData.get('group')
-        }
-      })
+      sendEvent('PARTICIPANT_LOGIN', {
+            name: formData.get('name'),
+            group: formData.get('group')
+        })
     })
   };
   const renderTrainerLoginView = () => {
@@ -35,16 +31,24 @@ document.addEventListener('DOMContentLoaded', () => {
     trainerLoginForm.addEventListener('submit', (event) => {
       event.preventDefault();
       const formData = new FormData(event.target);
-      sendEvent({
-        action: 'TRAINER_LOGIN',
-        payload: {
-          name: formData.get('name'),
-        }
+      sendEvent(
+        'TRAINER_LOGIN', {
+          name: formData.get('name')
+        })
       })
-    })
-  };
+    }
   const renderIssueSubmitView = () => {
     renderTemplateById('issueSubmit');
+    const issueSubmitForm = getNodeById('issueSubmitForm');
+
+    issueSubmitForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      sendEvent(
+        'TRAINER_NEEDED',{
+          problem: formData.get('problem')
+        });
+    })
   };
   const renderIssueReceivedView = () => {
     renderTemplateById('issueReceived');
@@ -59,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTemplateById('trainerDashboard');
   };
 
- 
 
   const socket = new WebSocket('ws://localhost:5000');
   const sendEvent = (action, payload) => {
@@ -75,8 +78,19 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(['WebSocket.onopen'], event);
   };
 
-  socket.onmessage= ev => {
-    console.log(ev);
+  socket.onmessage = event => {
+  const { action, payload } = JSON.parse(event.data);
+    switch (action) {
+      case 'PARTICIPANT_LOGGED': {
+        renderIssueSubmitView();
+        break;
+      }
+
+      case 'ISSUE_RECEIVED': {
+        renderIssueReceivedView();
+        break;
+      }
+    }
   }
 
   socket.onerror = ev => {
