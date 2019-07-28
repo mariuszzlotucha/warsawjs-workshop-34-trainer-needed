@@ -13,9 +13,35 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   const renderParticipantLoginView = () => {
     renderTemplateById('participantLogin');
+    const participantLoginForm = getNodeById('participantLoginForm');
+
+    participantLoginForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+
+      sendEvent({
+        action: 'PARTICIPANT_LOGIN',
+        payload: {
+          name: formData.get('name'),
+          group: formData.get('group')
+        }
+      })
+    })
   };
   const renderTrainerLoginView = () => {
     renderTemplateById('trainerLogin');
+    const trainerLoginForm = getNodeById('trainerLoginForm');
+
+    trainerLoginForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      sendEvent({
+        action: 'TRAINER_LOGIN',
+        payload: {
+          name: formData.get('name'),
+        }
+      })
+    })
   };
   const renderIssueSubmitView = () => {
     renderTemplateById('issueSubmit');
@@ -33,7 +59,17 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTemplateById('trainerDashboard');
   };
 
+ 
+
   const socket = new WebSocket('ws://localhost:5000');
+  const sendEvent = (action, payload) => {
+    try {
+      socket.send(JSON.stringify({ action, payload }));
+    }
+    catch (e) {
+      console.error(e);
+    }
+  };
 
   socket.onopen = event => {
     console.log(['WebSocket.onopen'], event);
@@ -52,4 +88,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   renderLandingView();
+
+  const loginParticipant = getNodeById('loginParticipant');
+  loginParticipant.addEventListener('click', ()=> {
+    renderParticipantLoginView();
+  })
+
+  const trainerParticipant = getNodeById('loginTrainer');
+  trainerParticipant.addEventListener('click', ()=> {
+    renderTrainerLoginView();
+  })
 });

@@ -40,12 +40,57 @@ const server = http.createServer((request, response) => {
   }
 });
 
+const state: State = {
+  participants: [],
+  trainers: [],
+};
+
+
+
+const sendEvent = (socket: WebSocket, event: Event): void => {
+  try {
+    socket.send(JSON.stringify(event));
+  }
+
+  catch (e) {
+    console.error(e);
+  }
+};
+
 const webSocketsServer = new WebSocket.Server({server});
 
 webSocketsServer.on('connection', (socket: WebSocket) => {
-  socket.send('welcome');
+  const connectedUser: User = {
+    id: `user-id-${Date.now()}`,
+    data: {
+      name: '',
+      group: '',
+    },
+    socket,
+  };
+
+
   socket.on('message', message => {
     console.log(['socket message'], message);
+    const { action, payload } = JSON.parse(message.toString());
+
+    switch (action as Action) {
+      case 'PARTICIPANT_LOGIN': {
+        connectedUser.data = payload;
+        state.participants = [...state.participants, connectedUser];
+        sendEvent(connectedUser.socket, { action: 'PARTICIPANT_LOGGED' });
+        break;
+      }
+      case 'TRAINER_LOGIN': {
+        connectedUser.data = payload;
+        state.participants = [...state.participants, connectedUser];
+        sendEvent(connectedUser.socket, {action: 'TRAINER_LOGGED'});
+        break;
+      }
+      default: {
+        console.error('unknown action');
+      }
+    }
   });
   socket.on('close', () => {
     console.log('socket closed');
